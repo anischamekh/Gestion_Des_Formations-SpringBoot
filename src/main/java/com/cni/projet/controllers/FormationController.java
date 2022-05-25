@@ -1,5 +1,6 @@
 package com.cni.projet.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,9 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.cni.projet.entity.Formation;
+import com.cni.projet.entity.Status;
 import com.cni.projet.entity.Theme;
 import com.cni.projet.entity.User;
 import com.cni.projet.repository.FormateurRepository;
@@ -39,28 +41,44 @@ public class FormationController {
 	  private FormationRepository formationRepository;
 	  @Autowired
 	  private final FormationService formationService;
-		
+	  		
 		@Autowired
 		public FormationController(FormationService formationService) {
 	        this.formationService = formationService;
 	    }
-	  
-	  
-	  @PostMapping("/addFormation")
+	  	  
+		@PostMapping("/addFormation")
 		public Formation addFormation(@RequestBody Formation formation) {
 			Theme theme = themeRepository.findById(formation.getTheme().getId()).get();
 			User formateur = formateurRepository.findById(formation.getUser().getId()).get();
 			if (theme == null || formateur == null) return null;
-			else {
-				formation.setTheme(theme);
-				formation.setUser(formateur);
-				formateur.getFormations().add(formation);
-				theme.getFormations().add(formation);
-				formationRepository.save(formation);
-				formateurRepository.save(formateur);
-				themeRepository.save(theme);
-				return formation;
+			else {			
+				LocalDate localDate = LocalDate.now();
+				LocalDate dd = formation.getDateDebut();
+				LocalDate df = formation.getDateFin();
+				if (df.isBefore(dd)) return null; 
+				else {
+					
+					if(localDate.isBefore(dd)) {
+						formation.setEtat(Status.PLANIFIER);
+					}else if ((localDate.isAfter(dd) && localDate.isBefore(df)) || (localDate.isEqual(dd) && localDate.isBefore(df))) {
+						formation.setEtat(Status.EN_COURS);
+					}else if (localDate.isAfter(df)) {
+						formation.setEtat(Status.REALISER);
+					}
+					formation.setTheme(theme);
+					formation.setUser(formateur);
+					formateur.getFormations().add(formation);
+					theme.getFormations().add(formation);
+					formationRepository.save(formation);
+					formateurRepository.save(formateur);
+					themeRepository.save(theme);
+					return formation;
+					
+				}
+				
 			}
+				
 		}
 	  
 		
@@ -83,7 +101,11 @@ public class FormationController {
 	    		Formation _formation = formationData.get();
 				_formation.setTitre(formation.getTitre());
 				_formation.setDescription(formation.getDescription());
-				_formation.setDate(formation.getDate());
+				_formation.setDateDebut(formation.getDateDebut());
+				_formation.setDateFin(formation.getDateFin());
+				_formation.setDuree(formation.getDuree());
+				_formation.setLien(formation.getLien());
+				_formation.setEtat(formation.getEtat());
 				_formation.setUser(formation.getUser());
 				_formation.setTheme(formation.getTheme());
 				return new ResponseEntity<>(formationService.updateFormation(_formation), HttpStatus.OK);

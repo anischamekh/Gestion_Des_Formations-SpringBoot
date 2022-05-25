@@ -55,7 +55,7 @@ public class MailService {
 		
 		msg.setTo(mail.getDestinaire());
 		msg.setSubject(mail.getObjet());
-    	msg.setText(mail.getMessage());
+    	msg.setText(mail.getMessage()+" "+mail.getObjet());
     	javaMailSender.send(msg);
     	
     	return mailRepository.save(mail).getId();
