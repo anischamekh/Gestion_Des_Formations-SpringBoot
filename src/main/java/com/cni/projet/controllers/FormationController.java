@@ -108,6 +108,20 @@ public class FormationController {
 				_formation.setEtat(formation.getEtat());
 				_formation.setUser(formation.getUser());
 				_formation.setTheme(formation.getTheme());
+				LocalDate localDate = LocalDate.now();
+				LocalDate dd = formation.getDateDebut();
+				LocalDate df = formation.getDateFin();
+				if (df.isBefore(dd)) return null; 
+				else {
+					
+					if(localDate.isBefore(dd)) {
+						formation.setEtat(Status.PLANIFIER);
+					}else if ((localDate.isAfter(dd) && localDate.isBefore(df)) || (localDate.isEqual(dd) && localDate.isBefore(df))) {
+						formation.setEtat(Status.EN_COURS);
+					}else if (localDate.isAfter(df)) {
+						formation.setEtat(Status.REALISER);
+					}
+				}
 				return new ResponseEntity<>(formationService.updateFormation(_formation), HttpStatus.OK);
 			} else {
 				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -120,5 +134,5 @@ public class FormationController {
 	    public ResponseEntity<?> deleteFormation(@PathVariable("id") int id) {
 	    	formationService.deleteFormation(id);
 	        return new ResponseEntity<>(HttpStatus.OK);
-	}
 	    }
+}

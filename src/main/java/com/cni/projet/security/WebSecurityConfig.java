@@ -20,8 +20,6 @@ import com.cni.projet.security.services.UserDetailsServiceImpl;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-		// securedEnabled = true,
-		// jsr250Enabled = true,
 		prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
@@ -61,6 +59,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/api/test/**").permitAll()
 			.antMatchers("/allFormations").permitAll()
 			.antMatchers("/findFormation/{id}").permitAll()
+			.antMatchers("/addParticipant").permitAll()
+			.antMatchers("/addParticipant/{idF}").permitAll()
+			.antMatchers("/addEvaluation").permitAll()
+			.antMatchers("/files/{id}").permitAll()
 			.anyRequest().authenticated();
 
 		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -54,6 +54,18 @@ public class Formation {
 				cascade = CascadeType.ALL,
 				fetch = FetchType.LAZY)
 	private Set<Participant> participants = new HashSet<Participant>();
+	/*
+	@JsonIgnore
+	@OneToMany(mappedBy = "formation",
+				cascade = CascadeType.ALL,
+				fetch = FetchType.LAZY)
+	private Set<FileDB> filesDb = new HashSet<FileDB>();
+	*/
+	@JsonIgnore
+	@OneToMany(mappedBy = "formation",
+				cascade = CascadeType.ALL,
+				fetch = FetchType.LAZY)
+	private Set<Evaluation> evaluation = new HashSet<Evaluation>();
 	
 	public Formation() {
 		super();
@@ -161,6 +173,23 @@ public class Formation {
 
 	public void setParticipants(Set<Participant> participants) {
 		this.participants = participants;
+	}
+
+/*
+	public Set<FileDB> getFilesDb() {
+		return filesDb;
+	}
+
+	public void setFilesDb(Set<FileDB> filesDb) {
+		this.filesDb = filesDb;
+	}
+	*/
+	public Set<Evaluation> getEvaluation() {
+		return evaluation;
+	}
+
+	public void setEvaluation(Set<Evaluation> evaluation) {
+		this.evaluation = evaluation;
 	}
 
 	@Override

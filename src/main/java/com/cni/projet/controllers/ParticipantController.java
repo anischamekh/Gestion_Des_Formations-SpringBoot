@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cni.projet.entity.Formation;
 import com.cni.projet.entity.Participant;
+import com.cni.projet.entity.User;
 import com.cni.projet.repository.FormationRepository;
 import com.cni.projet.repository.ParticipantRepository;
+import com.cni.projet.security.services.FormationService;
 import com.cni.projet.security.services.ParticipantService;
 
 @Transactional
@@ -32,6 +34,9 @@ public class ParticipantController {
 	
 	@Autowired
 	private ParticipantRepository participantRepository;
+	
+	@Autowired
+	private FormationService formationService;
 	
 	@Autowired
 	public ParticipantController(ParticipantService participantService) {
@@ -49,7 +54,7 @@ public class ParticipantController {
 		Participant participant = participantService.findParticipantById(id);
         return new ResponseEntity<>(participant, HttpStatus.OK);
     }
-
+	
     @PostMapping("/addParticipant")
 	public Participant addParticipant(@RequestBody Participant participant) {
     	Formation formation = formationRepository.findById(participant.getFormation().getId()).get();
@@ -57,9 +62,25 @@ public class ParticipantController {
 		else {
 			participant.setFormation(formation);
 			formation.getParticipants().add(participant);
-			formationRepository.save(formation);
 			participantRepository.save(participant);
 			return participant;
 		}
 	}
+	
+	
+	/*
+	@PostMapping("/addParticipant/{idF}")
+	public Participant addParticipant(@PathVariable int idF,@RequestBody Participant participant) {
+		//Formation formation = formationRepository.findById(idF).get();
+		Formation formation = formationService.findFormationById(idF);
+		if (formation == null) return null;
+		else {
+			participant.setFormation(formation);
+			formation.getParticipants().add(participant);
+			participantRepository.save(participant);
+			return participant;
+		}
+	}
+	*/
+	
 }
